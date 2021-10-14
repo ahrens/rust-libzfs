@@ -389,7 +389,7 @@ impl NvEncoding {
 
 foreign_type! {
     /// An `NvList`
-    pub unsafe type NvList: Sync + Send {
+    pub unsafe type NvList: Send {
         type CType = sys::nvlist;
         fn drop = sys::nvlist_free;
     }
@@ -399,7 +399,7 @@ impl NvList {
     /// Try to create a new `NvList` with no options.
     ///
     /// Returns an error if memory allocation fails
-    /// #[doc(alias = "nvlist_alloc")]
+    #[doc(alias = "nvlist_alloc")]
     pub fn try_new() -> io::Result<Self> {
         let mut n = ptr::null_mut();
         let v = unsafe {
@@ -416,7 +416,7 @@ impl NvList {
     /// Try to create a new `NvList` with the `NV_UNIQUE_NAME` constraint
     ///
     /// Returns an error if memory allocation fails
-    /// #[doc(alias = "nvlist_alloc")]
+    #[doc(alias = "nvlist_alloc")]
     pub fn try_new_unique_names() -> io::Result<Self> {
         let mut n = ptr::null_mut();
         let v = unsafe { sys::nvlist_alloc(&mut n, sys::NV_UNIQUE_NAME, 0) };
@@ -446,7 +446,7 @@ impl NvList {
     /// # Panics
     ///
     ///  - if [`try_new()`] returns an error
-    /// #[doc(alias = "nvlist_alloc")]
+    #[doc(alias = "nvlist_alloc")]
     pub fn new() -> Self {
         Self::try_new().unwrap()
     }
@@ -456,7 +456,7 @@ impl NvList {
     /// # Panics
     ///
     ///  - if [`try_new_unique_names()`] returns an error
-    /// #[doc(alias = "nvlist_alloc")]
+    #[doc(alias = "nvlist_alloc")]
     pub fn new_unique_names() -> Self {
         Self::try_new_unique_names().unwrap()
     }
