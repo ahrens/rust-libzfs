@@ -372,6 +372,49 @@ impl NvEncode for str {
     }
 }
 
+impl NvEncode for &[u64] {
+    fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
+        let name = name.into_cstr();
+        let v = unsafe {sys::nvlist_add_uint64_array(nv.as_mut_ptr(), name.as_ref().as_ptr(), self.as_ptr(), std::convert::TryInto::try_into(self.len()).unwrap())};
+        if v != 0 {
+            Err(io::Error::from_raw_os_error(v))
+        } else {
+            Ok(())
+        }
+    }
+}
+
+impl NvEncode for &[&ffi::CStr] {
+    fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
+        let name = name.into_cstr();
+        let v = unsafe {sys::nvlist_add_string_array(nv.as_mut_ptr(), name.as_ref().as_ptr(), self.iter().map(|x| x.as_ptr()).collect::<Vec<*const i8>>()[..].as_ptr(), std::convert::TryInto::try_into(self.len()).unwrap())};
+        if v != 0 {
+            Err(io::Error::from_raw_os_error(v))
+        } else {
+            Ok(())
+        }
+    }
+}
+
+impl NvEncode for &[&str] {
+    fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
+        let cstrings = self.iter().map(|x| std::ffi::CString::new(*x).unwrap()).collect::<Vec<ffi::CString>>();
+        (&cstrings.iter().map(|x|x.as_c_str()).collect::<Vec<&ffi::CStr>>()[..]).insert_into(name, nv)
+    }
+}
+
+impl NvEncode for &[&NvListRef] {
+    fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
+        let name = name.into_cstr();
+        let v = unsafe {sys::nvlist_add_nvlist_array(nv.as_mut_ptr(), name.as_ref().as_ptr(), self.iter().map(|x| x.as_ptr()).collect::<Vec<*const nvpair_sys::nvlist>>()[..].as_ptr(), std::convert::TryInto::try_into(self.len()).unwrap())};
+        if v != 0 {
+            Err(io::Error::from_raw_os_error(v))
+        } else {
+            Ok(())
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone)]
 pub enum NvEncoding {
     Native,
