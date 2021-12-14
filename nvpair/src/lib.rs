@@ -372,26 +372,7 @@ impl NvEncode for str {
     }
 }
 
-impl NvEncode for &[u64] {
-    fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
-        let name = name.into_cstr();
-        let v = unsafe {
-            sys::nvlist_add_uint64_array(
-                nv.as_mut_ptr(),
-                name.as_ref().as_ptr(),
-                self.as_ptr(),
-                std::convert::TryInto::try_into(self.len()).unwrap(),
-            )
-        };
-        if v != 0 {
-            Err(io::Error::from_raw_os_error(v))
-        } else {
-            Ok(())
-        }
-    }
-}
-
-impl NvEncode for &[&ffi::CStr] {
+impl NvEncode for [&ffi::CStr] {
     fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
         let name = name.into_cstr();
         let v = unsafe {
@@ -410,7 +391,7 @@ impl NvEncode for &[&ffi::CStr] {
     }
 }
 
-impl NvEncode for &[&str] {
+impl NvEncode for [&str] {
     fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
         let cstrings = self
             .iter()
@@ -424,7 +405,7 @@ impl NvEncode for &[&str] {
     }
 }
 
-impl NvEncode for &[&NvListRef] {
+impl NvEncode for [&NvListRef] {
     fn insert_into<S: CStrArgument>(&self, name: S, nv: &mut NvListRef) -> io::Result<()> {
         let name = name.into_cstr();
         let v = unsafe {

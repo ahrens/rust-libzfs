@@ -99,7 +99,7 @@ checksum = "0ee1c47aaa256ecabcaea351eae4a9b01ef39ed810004e298d2511ed284b1525"
 
 [[package]]
 name = "nvpair"
-version = "0.5.1"
+version = "0.5.1-delphix0"
 dependencies = [
  "cstr-argument",
  "foreign-types",
@@ -108,7 +108,7 @@ dependencies = [
 
 [[package]]
 name = "nvpair-sys"
-version = "0.4.1"
+version = "0.4.1-delphix0"
 
 [[package]]
 name = "os_pipe"
